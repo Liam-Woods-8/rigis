@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Profile Replica</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      background: #f3f3f3;
+      color: #222;
+    }
+
+    .app {
+      max-width: 430px;
+      margin: 0 auto;
+      min-height: 100vh;
+      background: #f7f7f7;
+      border: 1px solid #ddd;
+    }
+
+    .status-bar {
+      height: 44px;
+      background: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 18px;
+      font-weight: 600;
+      font-size: 18px;
+      color: #000;
+    }
+
+    .status-icons {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 14px;
+    }
+
+    .battery {
+      width: 28px;
+      height: 14px;
+      border: 2px solid #999;
+      border-radius: 4px;
+      position: relative;
+    }
+
+    .battery::after {
+      content: "";
+      position: absolute;
+      right: -5px;
+      top: 3px;
+      width: 3px;
+      height: 6px;
+      background: #999;
+      border-radius: 1px;
+    }
+
+    .battery-level {
+      width: 18px;
+      height: 8px;
+      background: #f0c44d;
+      margin: 1px;
+      border-radius: 2px;
+    }
+
+    .topbar {
+      background: #c84f1c;
+      color: white;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 18px;
+    }
+
+    .topbar-left {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .back-icon {
+      font-size: 34px;
+      line-height: 1;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .divider {
+      width: 1px;
+      height: 34px;
+      background: rgba(255,255,255,0.5);
+    }
+
+    .title {
+      font-size: 26px;
+      font-weight: 500;
+    }
+
+    .topbar-right {
+      display: flex;
+      align-items: center;
+      gap: 22px;
+      font-size: 28px;
+      user-select: none;
+    }
+
+    .hero-strip {
+      height: 48px;
+      background:
+        linear-gradient(rgba(120,80,40,0.18), rgba(120,80,40,0.18)),
+        repeating-linear-gradient(
+          45deg,
+          #8f5d3c 0px,
+          #8f5d3c 28px,
+          #d1a25a 28px,
+          #d1a25a 56px,
+          #4a5f66 56px,
+          #4a5f66 84px,
+          #c48a52 84px,
+          #c48a52 112px
+        );
+    }
+
+    .profile-header {
+      background: #f4f4f4;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 18px 16px;
+      border-bottom: 1px solid #8e8e8e;
+    }
+
+    .profile-pic-frame {
+      width: 68px;
+      height: 96px;
+      background: #fff;
+      border: 1px solid #b3b3b3;
+      box-shadow: inset 0 0 0 1px #ddd;
+      padding: 5px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .profile-pic {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      background: #d8d8d8;
+    }
+
+    .profile-meta .label {
+      font-size: 22px;
+      color: #5c5c5c;
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+
+    .profile-meta .id-number {
+      font-size: 24px;
+      color: #111;
+      letter-spacing: 0.5px;
+    }
+
+    .tabs {
+      display: flex;
+      background: #fff;
+      border-bottom: 1px solid #8d8d8d;
+    }
+
+    .tab {
+      flex: 1;
+      text-align: center;
+      padding: 18px 10px 16px;
+      font-size: 28px;
+      color: #222;
+      position: relative;
+      font-weight: 500;
+    }
+
+    .tab.active {
+      font-weight: 700;
+    }
+
+    .tab.active::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      bottom: -1px;
+      width: 100%;
+      height: 4px;
+      background: #9a5a33;
+    }
+
+    .content {
+      padding: 18px 16px 32px;
+      background: #f8f8f8;
+    }
+
+    .field-label {
+      font-size: 28px;
+      color: #666;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .field-value {
+      font-size: 26px;
+      margin-bottom: 26px;
+    }
+
+    .section {
+      margin-bottom: 24px;
+    }
+
+    .section-toggle {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: #93542f;
+      font-size: 28px;
+      font-weight: 700;
+      background: transparent;
+      border: none;
+      width: 100%;
+      cursor: pointer;
+      padding: 0 0 8px 0;
+      border-bottom: 1px solid #b5b5b5;
+      text-align: left;
+    }
+
+    .arrow {
+      display: inline-block;
+      transition: transform 0.2s ease;
+      font-size: 24px;
+      transform: rotate(0deg);
+    }
+
+    .section.open .arrow {
+      transform: rotate(90deg);
+    }
+
+    .section-body {
+      padding-top: 18px;
+      display: none;
+    }
+
+    .section.open .section-body {
+      display: block;
+    }
+
+    .info-icon {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      background: #4b94b9;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      margin: 0 0 16px 18px;
+      font-size: 22px;
+    }
+
+    .card {
+      background: #fff;
+      border: 1px solid #b8b8b8;
+    }
+
+    .card-header {
+      font-size: 26px;
+      font-weight: 700;
+      padding: 18px 16px;
+      border-bottom: 1px solid #b8b8b8;
+    }
+
+    .card-row {
+      padding: 18px 16px;
+      border-bottom: 1px solid #d1d1d1;
+      position: relative;
+      background: #fff;
+    }
+
+    .card-row:last-child {
+      border-bottom: none;
+    }
+
+    .primary-text {
+      font-size: 26px;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+
+    .secondary-text {
+      font-size: 24px;
+      color: #333;
+    }
+
+    .chevron {
+      position: absolute;
+      right: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 34px;
+      color: #666;
+    }
+
+    .spacer {
+      height: 24px;
+    }
+
+    @media (max-width: 450px) {
+      .title {
+        font-size: 22px;
+      }
+
+      .tab {
+        font-size: 20px;
+      }
+
+      .field-label,
+      .field-value,
+      .section-toggle,
+      .card-header,
+      .primary-text,
+      .secondary-text,
+      .profile-meta .label,
+      .profile-meta .id-number {
+        font-size: clamp(18px, 5vw, 28px);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+
+    <div class="topbar">
+      <div class="topbar-left">
+        <div class="back-icon">←</div>
+        <div class="divider"></div>
+        <div class="title">Profile</div>
+      </div>
+      <div class="topbar-right">
+        <span>◌</span>
+        <span>⋮</span>
+      </div>
+    </div>
+
+    <div class="profile-header">
+      <div class="profile-pic-frame">
+        <img
+          class="profile-pic"
+          src="rigis.jpeg"
+          alt="Profile photo"
+        />
+      </div>
+      <div class="profile-meta">
+        <div class="label">ID</div>
+        <div class="id-number">5841937260</div>
+      </div>
+    </div>
+
+    <div class="tabs">
+      <div class="tab active">Personal</div>
+      <div class="tab">Biographic</div>
+    </div>
+
+    <div class="content">
+      <div class="field-label">Date of Birth</div>
+      <div class="field-value">12/28/2002</div>
+
+      <div class="section open" id="namesSection">
+        <button class="section-toggle" onclick="toggleSection('namesSection')">
+          <span class="arrow">›</span>
+          <span>Names</span>
+        </button>
+
+        <div class="section-body">
+          <div class="info-icon">i</div>
+
+          <div class="card">
+            <div class="card-header">Name/Type</div>
+
+            <div class="card-row">
+              <div class="primary-text">Audrey Valentine Weisburd</div>
+              <div class="secondary-text">Primary</div>
+              <div class="chevron">›</div>
+            </div>
+
+            <div class="card-row">
+              <div class="primary-text">Audrey Valentine Weisburd</div>
+              <div class="secondary-text">Preferred</div>
+              <div class="chevron">›</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section open" id="citizenshipSection">
+        <button class="section-toggle" onclick="toggleSection('citizenshipSection')">
+          <span class="arrow">›</span>
+          <span>Citizenship</span>
+        </button>
+
+        <div class="section-body">
+          <div class="info-icon">i</div>
+
+          <div class="card">
+            <div class="card-header">Country/Status/Passport</div>
+
+            <div class="card-row">
+              <div class="primary-text">United States</div>
+              <div class="secondary-text">Citizen</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="spacer"></div>
+    </div>
+  </div>
+
+  <script>
+    function toggleSection(sectionId) {
+      const section = document.getElementById(sectionId);
+      section.classList.toggle("open");
+    }
+  </script>
+</body>
+</html>
